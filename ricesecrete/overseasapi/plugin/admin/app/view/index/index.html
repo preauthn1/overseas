@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>home</title>
+    <link class="icon" rel="icon" type="image/png" href="">
+    <!-- 依 赖 样 式 -->
+    <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css?v=<?=get_version() ?>"/>
+    <!-- 加 载 样 式 -->
+    <link rel="stylesheet" href="/app/admin/admin/css/loader.css?v=<?=get_version() ?>"/>
+    <!-- 布 局 样 式 -->
+    <link rel="stylesheet" href="/app/admin/admin/css/admin.css?v=<?=get_version() ?>"/>
+    <!-- 重置样式 -->
+    <link rel="stylesheet" href="/app/admin/admin/css/reset.css?v=<?=get_version() ?>"/>
+</head>
+<!-- 结 构 代 码 -->
+<body class="layui-layout-body pear-admin">
+<!-- 布 局 框 架 -->
+<div class="layui-layout layui-layout-admin">
+    <!-- 顶 部 样 式 -->
+    <div class="layui-header">
+        <!-- 菜 单 顶 部 -->
+        <div class="layui-logo">
+            <!-- 图 标 -->
+            <img class="logo">
+            <!-- 标 题 -->
+            <span class="title"></span>
+        </div>
+        <!-- 顶 部 左 侧 功 能 -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="collapse layui-nav-item"><a href="#" class="layui-icon layui-icon-shrink-right"></a></li>
+            <li class="refresh layui-nav-item"><a href="#" class="layui-icon layui-icon-refresh-1" loading=600></a></li>
+        </ul>
+        <!-- 多 系 统 菜 单 -->
+        <div id="control" class="layui-layout-control"></div>
+        <!-- 顶 部 右 侧 菜 单 -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item notify">
+                <!-- 消息通知 -->
+                <a class="layui-icon layui-icon-notice" href="javascript:;"><span class="layui-badge-dot"
+                                                                                  id="recharge_withdraw_count"></span></a>
+                <!-- 功 能 菜 单 -->
+                <dl class="layui-nav-child">
+                    <dd><a user-menu-url="/app/admin/recharge/index" user-menu-id="20" user-menu-title="充值订单"><span
+                            data-lang="充值订单">充值订单</span>(<span style="color: red" id="recharge_count">1</span>)</a>
+                    </dd>
+                    <dd><a user-menu-url="/app/admin/withdraw/index" user-menu-id="21" user-menu-title="提现订单"><span
+                            data-lang="提现订单">提现订单</span>(<span style="color: red" id="withdraw_count">2</span>)</a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="#"
+                                                        class="fullScreen layui-icon layui-icon-screen-full"></a></li>
+            <li class="layui-nav-item layui-hide-xs message"></li>
+            <li class="layui-nav-item user">
+                <!-- 头 像 -->
+                <a class="layui-icon layui-icon-username" href="javascript:;"></a>
+                <!-- 功 能 菜 单 -->
+                <dl class="layui-nav-child">
+                    <dd><a user-menu-url="/app/admin/account/index" user-menu-id="10" user-menu-title="基本资料"
+                           data-lang="基本资料">基本资料</a>
+                    </dd>
+                    <dd><a href="javascript:void(0);" class="logout" data-lang="注销登录">注销登录</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+                <a href="javascript:void(0);" class="language-switch">
+                    <i class="layui-icon layui-icon-translate"></i>
+                    <span id="switch-lang-text">语言</span>
+                </a>
+                <dl class="layui-nav-child" id="language-menu">
+                    <!-- 动态生成语言选项 -->
+                </dl>
+            </li>
+            <!-- 主 题 配 置 -->
+            <li class="layui-nav-item setting"><a href="#" class="layui-icon layui-icon-more-vertical"></a></li>
+        </ul>
+    </div>
+    <!-- 侧 边 区 域 -->
+    <div class="layui-side layui-bg-black">
+        <!-- 菜 单 顶 部 -->
+        <div class="layui-logo">
+            <!-- 图 标 -->
+            <img class="logo">
+            <!-- 标 题 -->
+            <a href="/"><span class="title"></span></a>
+        </div>
+        <!-- 菜 单 内 容 -->
+        <div class="layui-side-scroll">
+            <div id="sideMenu"></div>
+        </div>
+    </div>
+    <!-- 视 图 页 面 -->
+    <div class="layui-body">
+        <!-- 内 容 页 面 -->
+        <div id="content"></div>
+    </div>
+    <!-- 页脚 -->
+    <div class="layui-footer layui-text">
+                <span class="left">
+                    Released under the MIT license.
+                </span>
+        <span class="center"></span>
+    </div>
+    <!-- 遮 盖 层 -->
+    <div class="pear-cover"></div>
+    <!-- 加 载 动 画 -->
+    <div class="loader-main">
+        <!-- 动 画 对 象 -->
+        <div class="loader"></div>
+    </div>
+</div>
+<!-- 移 动 端 便 捷 操 作 -->
+<div class="pear-collapsed-pe collapse">
+    <a href="#" class="layui-icon layui-icon-shrink-right"></a>
+</div>
+<!-- 在页脚附近添加音频元素 充值审核 -->
+<audio id="rechargeSound" preload="auto">
+    <source src="/app/admin/admin/sounds/recharge01.mp3" type="audio/mpeg">
+</audio>
+<audio id="rechargeSuccessSound" preload="auto">
+    <source src="/app/admin/admin/sounds/notify01.mp3" type="audio/mpeg">
+</audio>
+<!-- 在页脚附近添加音频元素 提现审核 -->
+<audio id="withdrawSound" preload="auto">
+    <source src="/app/admin/admin/sounds/withdraw01.mp3" type="audio/mpeg">
+</audio>
+
+
+<!-- 依 赖 脚 本 -->
+<script src="/app/admin/component/layui/layui.js?v=<?=layui_version() ?>"></script>
+<script src="/app/admin/component/pear/pear.js?v=<?=get_version() ?>"></script>
+<script src="/plugin/webman/push/push.js"></script>
+<!-- 框 架 初 始 化 -->
+<script>
+
+    // Admin
+    window.Admin = {
+        Account: {}
+    };
+
+    layui.use(["admin", "jquery", "popup", "drawer"], function () {
+        var $ = layui.$;
+        var admin = layui.admin;
+        var popup = layui.popup;
+        admin.setConfigType("json");
+        admin.setConfigPath("/app/admin/config/get");
+
+        admin.render();
+
+        // 登出逻辑
+        admin.logout(function () {
+            $.ajax({
+                url: "/app/admin/account/logout",
+                dataType: "json",
+                success: function (res) {
+                    if (res.code) {
+                        return popup.error(res.msg);
+                    }
+                    popup.success("注销成功", function () {
+                        location.reload();
+                    })
+                }
+            });
+            return false;
+        })
+        $.ajax({
+            url: "/app/admin/account/info",
+            dataType: 'json',
+            success: function (res) {
+                window.Admin.Account = res.data;
+                $("#recharge_count").text(res.data.wait_recharge);
+                $("#withdraw_count").text(res.data.wait_withdraw);
+                if (parseInt(res.data.wait_recharge) + parseInt(res.data.wait_withdraw) > 0) {
+                    $("#recharge_withdraw_count").show();
+                } else {
+                    $("#recharge_withdraw_count").hide();
+                }
+            }
+        });
+        var language = {
+            "zh-CN": "简体中文",
+            "en": "English"
+        };
+        var languagePacks = {};
+
+        // 语言切换函数（可选）
+        function switchLanguage(lang) {
+            languagePacks = JSON.parse(localStorage.getItem("admin_language_packs"));
+            localStorage.setItem('admin_language', lang);
+            let currentDisplayLang = "语言";
+            // 查找当前语言对应的显示名称
+            $.each(language, function (index, langItem) {
+                if (langItem.lang == lang) {
+                    currentDisplayLang = langItem.title;
+                    return false; // 跳出循环
+                }
+            });
+            // 更新语言按钮显示文本
+            $('#switch-lang-text').text(currentDisplayLang);
+            // 重新应用语言
+            $('[data-lang]').each(function () {
+                var langKey = $(this).data('lang');
+                var text = getText(langKey);
+                if (this.tagName === 'INPUT' || this.tagName === 'TEXTAREA') {
+                    $(this).attr('placeholder', text);
+                } else {
+                    $(this).text(text);
+                }
+            });
+        }
+
+        /**
+         * 刷新本地语言包
+         */
+        function updateLanguagePacks() {
+            $.ajax({
+                url: "/app/admin/index/get_lang",
+                dataType: 'json',
+                success: function (res) {
+                    languagePacks = res.data.list;
+                    language = res.data.lang;
+                    localStorage.setItem("admin_language_packs", JSON.stringify(languagePacks))
+                    var lang = localStorage.getItem('admin_language');
+                    switchLanguage(lang ?? "zh-CN");
+                    // 生成语言切换菜单
+                    if (language) {
+                        generateLanguageMenu(language);
+                    }
+                }
+            });
+        }
+
+        // 动态生成语言切换菜单
+        function generateLanguageMenu(langData) {
+            var languageMenuHtml = '';
+            var defaultLang = 'zh-CN';
+            var currentDisplayLang = '语言';
+
+            // 查找默认语言
+            $.each(langData, function (index, langItem) {
+                if (langItem.is_default == 1) {
+                    defaultLang = langItem.lang;
+                    currentDisplayLang = langItem.title;
+                }
+            });
+
+            // 生成菜单项
+            $.each(langData, function (index, langItem) {
+                languageMenuHtml += '<dd><a href="javascript:void(0);" class="switch-lang" data-lang-code="' + langItem.lang + '">' + langItem.title + '</a></dd>';
+            });
+
+            // 插入到语言菜单中
+            $('#language-menu').html(languageMenuHtml);
+            // 设置当前语言或默认语言
+            var currentLang = localStorage.getItem('admin_language') || defaultLang;
+            switchLanguage(currentLang);
+        }
+
+        updateLanguagePacks();
+        // 语言切换事件绑定
+        $(document).on('click', '.switch-lang', function () {
+            var lang = $(this).data('lang-code');
+            switchLanguage(lang);
+            location.reload();
+        });
+
+        // 确保 Push 类已定义后再执行
+        if (typeof Push !== 'undefined') {
+            // 建立连接
+            var connection = new Push({
+                url: 'ws://ws.webmanshop.com',
+                app_key: 'f49fc68dc849bcc0dfe9cdb047d237ad',
+                auth: 'http://api.webmanshop.com/plugin/webman/push/auth'
+            });
+            // 监听充值提现订阅消息
+            var recharge_withdraw_channel = connection.subscribe('group-' + 'recharge_withdraw');
+
+            recharge_withdraw_channel.on('message', function (data) {
+                // data里是消息内容
+                console.log(data);
+                if (data.type == 10) {
+                    //充值待审核
+                    $("#recharge_count").text(data.data);
+                    $("#recharge_withdraw_count").show();
+                    // console.log("充值待审核")
+                    var rechargeSound = document.getElementById('rechargeSound');
+                    if (rechargeSound) {
+                        rechargeSound.play().catch(function (error) {
+                            console.log('Audio play failed:', error);
+                        });
+                    }
+                }
+                if (data.type == 101) {
+                    //充值待审核
+                    $("#recharge_count").text(data.data);
+                }
+                if (data.type == 11) {
+                    //提现待审核
+                    $("#withdraw_count").text(data.data);
+                    // console.log("提现待审核")
+                    var withdrawSound = document.getElementById('withdrawSound');
+                    if (withdrawSound) {
+                        withdrawSound.play().catch(function (error) {
+                            console.log('Audio play failed:', error);
+                        });
+                    }
+                    $("#recharge_withdraw_count").show();
+                }
+                if (data.type == 111) {
+                    //提现待审核
+                    $("#withdraw_count").text(data.data);
+                }
+                if (data.type == 9) {
+                    //充值成功
+                    // console.log("充值成功")
+                    var rechargeSuccessSound = document.getElementById('rechargeSuccessSound');
+                    if (rechargeSuccessSound) {
+                        rechargeSuccessSound.play().catch(function (error) {
+                            console.log('Audio play failed:', error);
+                        });
+                    }
+                }
+            });
+        } else {
+            console.warn('Push library not available');
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+    background: #0F102A;
+    --swiper-pagination-color: #A423FE; /* 激活状态的小点颜色 */
+    --swiper-pagination-bullet-inactive-color: gray; /* 非激活状态的小点颜色 */
+}
+
+img {
+    display: block;
+}
+
+
+.text-stroke {
+    --stroke-width: 4px;
+    --background-gradient: linear-gradient(45deg, #A43AEE 0%, #22FF4E 100%);
+    --text-gradient: linear-gradient(45deg, white 0%, #Fff 100%);
+    font-family: 'D-DIN';
+    font-weight: bold;
+    font-size: 45px;
+}
+
+@media (max-width: 768px) {
+.text-stroke-text {
+    font-size: 23px !important;
+}
+
+}
+.text-stroke-text {
+    position: relative;
+    white-space: nowrap;
+}
+
+.text-stroke-text::before,
+.text-stroke-text::after {
+    content: attr(data-text);
+    display: block;
+    background-clip: text;
+    color: transparent;
+}
+
+.text-stroke-text::before {
+    position: absolute;
+    inset: 0;
+    background-image: var(--background-gradient);
+    -webkit-text-stroke: var(--stroke-width);
+}
+
+.text-stroke-text::after {
+    position: relative;
+    z-index: 1;
+    background-image: var(--text-gradient);
+}
+
+.mx-1254 {
+    max-width: 1254px;
+}

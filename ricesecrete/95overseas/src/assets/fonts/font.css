@@ -1,0 +1,13 @@
+/**
+* @name: font
+* @author: 89254
+* @date: 2024-06-24 14:27
+* @description：font
+* @update: 2024-06-24 14:27
+*/
+@font-face {
+    font-family: 'D-DIN';
+    src: url('D-DIN-Bold.ttf');
+    font-weight: normal;
+    font-style: normal;
+}

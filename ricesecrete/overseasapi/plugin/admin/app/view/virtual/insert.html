@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>新增页面</title>
+    <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css?v=<?=get_version() ?>"/>
+    <link rel="stylesheet" href="/app/admin/admin/css/reset.css?v=<?=get_version() ?>"/>
+</head>
+<body>
+
+<form class="layui-form" action="">
+
+    <div class="mainBox">
+        <div class="main-container mr-5">
+            <div class="layui-form-item">
+                <label class="layui-form-label required" data-lang="用户ID">用户ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="user_id" value="" required lay-verify="required" class="layui-input" data-lang="请输入一个假的用户ID" placeholder="请输入一个假的用户ID">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" data-lang="用户名字">用户名字</label>
+                <div class="layui-input-block">
+                    <input type="text" name="user_name" value=""  class="layui-input" data-lang="请输入一个假的用户名称" placeholder="请输入一个假的用户名称">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required" data-lang="中奖内容">中奖内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea" ></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" data-lang="中奖金额">中奖金额</label>
+                <div class="layui-input-block">
+                    <input type="text" name="money" value=""  class="layui-input" data-lang="中奖金额" placeholder="中奖金额">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="button-container">
+            <button type="submit" class="pear-btn pear-btn-primary pear-btn-md" lay-submit=""
+                    lay-filter="save">
+                <span data-lang="提交">提交</span>
+            </button>
+            <button type="reset" class="pear-btn pear-btn-md">
+                <span data-lang="重置">重置</span>
+            </button>
+        </div>
+    </div>
+
+</form>
+
+<script src="/app/admin/component/layui/layui.js?v=<?=layui_version() ?>"></script>
+<script src="/app/admin/component/pear/pear.js?v=<?=get_version() ?>"></script>
+<script src="/app/admin/admin/js/permission.js"></script>
+<script>
+
+    // 相关接口
+    const INSERT_API = "/app/admin/virtual/insert";
+    layui.use(["upload", "layer", "popup", "util"], function () {
+        let $ = layui.$;
+        let input = $("#icon").prev();
+        let deleteBtn = $("#deleteIcon");
+        let previewContainer = $("#iconPreview");
+        let previewImg = previewContainer.find('img');
+
+        // 初始化显示
+        function initDisplay() {
+            let imgUrl = input.val();
+            if (imgUrl) {
+                previewImg.attr('src', imgUrl);
+                previewContainer.show();
+                deleteBtn.show();
+            } else {
+                previewContainer.hide();
+                deleteBtn.hide();
+            }
+        }
+
+        // 初始调用
+        initDisplay();
+
+        // 上传功能
+        layui.upload.render({
+            elem: "#icon",
+            url: "/app/admin/upload/file",
+            data: {
+                folder: "/hkxa/pay/"
+            },
+            accept: "file",
+            field: "__file__",
+            done: function (res) {
+                if (res.code) return layui.popup.failure(getText(res.msg));
+                $('input[name="icon"]').val(res.data.url);
+                initDisplay(); // 更新显示
+                parent.refreshTable();
+            }
+        });
+        // 删除功能
+        deleteBtn.on('click', function () {
+            layui.layer.confirm(getText('确定要删除这张图片吗？'), function (index) {
+                input.val('');
+                initDisplay(); // 更新显示
+                layui.layer.close(index);
+            });
+        });
+    });
+    // 字段 禁用 status
+    layui.use(["form"], function () {
+        layui.$("#status").attr("checked", layui.$('input[name="status"]').val() != 0);
+        layui.form.render();
+        layui.form.on("switch(status)", function (data) {
+            layui.$('input[name="status"]').val(this.checked ? 1 : 0);
+        });
+    })
+
+    //提交事件
+    layui.use(["form", "popup"], function () {
+        layui.form.on("submit(save)", function (data) {
+            layui.$.ajax({
+                url: INSERT_API,
+                type: "POST",
+                dateType: "json",
+                data: data.field,
+                success: function (res) {
+                    if (res.code) {
+                        return layui.popup.failure(getText(res.msg));
+                    }
+                    return layui.popup.success(getText("操作成功"), function () {
+                        parent.refreshTable();
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }
+            });
+            return false;
+        });
+    });
+
+</script>
+
+</body>
+</html>

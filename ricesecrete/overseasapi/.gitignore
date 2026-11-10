@@ -1,0 +1,10 @@
+/runtime
+/.idea
+/.vscode
+/vendor
+*.log
+.env
+/tests/tmp
+/tests/.phpunit.result.cache
+plugin/admin/config/upload.php
+app/common/email/MailgunEmail.php
